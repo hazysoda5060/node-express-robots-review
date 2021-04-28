@@ -1,25 +1,47 @@
-import logo from './logo.svg';
+import {Component} from 'react';
+import axios from 'axios'
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      robotArr: []
+    }
+    this.handleDelete = this.handleDelete.bind(this)
+  }
+
+  componentDidMount() {
+    axios.get('/api/robots')
+    .then(res => this.setState({ robotArr: res.data }))
+    .catch(err => console.log(err))
+  }
+
+  handleDelete(id) {
+    axios.delete(`/api/robots/${id}`)
+    .then(res => console.log(res.data))
+    .catch(err => console.log(err))
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div>ROBOT ROCK</div>
+        {
+          this.state.robotArr.map(robotObj => {
+            return (
+              <div key={robotObj.id}>
+                <h2>{robotObj.name}</h2>
+                < br />
+                <img src={robotObj.image} alt={robotObj.name}/>
+                <button onClick={() => this.handleDelete(robotObj.id)} >destroy robot</button>
+              </div>
+            )
+          })
+        }
+      </div>
+    );
+  }
 }
 
 export default App;
